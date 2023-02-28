@@ -9,23 +9,35 @@ namespace Lab_3
             Interval interval1 = new Interval(6, 10, "A");
             Interval interval2 = new Interval(2, 14, "B");
 
-
             interval1.ShowInterval();
             Console.WriteLine(new string('=', 40));
+            await Manipulator.Save(interval2);
+            await Manipulator.Read(interval1);
+            Console.WriteLine(new string('=', 40));
+            Console.ReadKey();
+        }
+        
+    }
+
+    class Manipulator
+    {
+        public static async Task Save(Interval interval2)
+        {
             using (FileStream fs = new FileStream("save.json", FileMode.OpenOrCreate))
             {
                 await JsonSerializer.SerializeAsync<Interval>(fs, interval2);
                 Console.WriteLine("Saved");
             }
+        }
 
-            using (FileStream fs = new FileStream("save.json", FileMode.OpenOrCreate))
+        public static async Task Read(Interval interval1)
+        {
+            using (FileStream fs = new FileStream("read.json", FileMode.OpenOrCreate))
             {
                 Interval? interval = await JsonSerializer.DeserializeAsync<Interval>(fs);
                 interval?.CompressInterval(0.5);
                 interval?.CompareIntervals(interval1);
             }
-            Console.WriteLine(new string('=', 40));
-            Console.ReadKey();
         }
     }
 

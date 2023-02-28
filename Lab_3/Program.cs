@@ -1,21 +1,29 @@
-﻿namespace Lab_3
+﻿using System.Text.Json;
+
+namespace Lab_3
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Interval interval1 = new Interval(6, 10, "A");
-            Interval interval2 = new Interval(5, 13, "B");
-            Interval interval3 = new Interval(-10, 10, "C");
-            interval1.ShiftToLeft(2);
-            interval1.ShiftToRight(15);
-            //interval1.CompressInterval(0.5);
-            interval2.CompareIntervals(interval1);
-            interval2.AddIntervals(interval1);
-            interval2.SubtractIntervals(interval1);
-            interval3.ExpandInterval(0.5);
-            interval3.CompressInterval(0.5);
-            
+            Interval interval2 = new Interval(2, 14, "B");
+
+
+            interval1.ShowInterval();
+            Console.WriteLine(new string('=', 40));
+            using (FileStream fs = new FileStream("save.json", FileMode.OpenOrCreate))
+            {
+                await JsonSerializer.SerializeAsync<Interval>(fs, interval2);
+                Console.WriteLine("Saved");
+            }
+
+            using (FileStream fs = new FileStream("save.json", FileMode.OpenOrCreate))
+            {
+                Interval? interval = await JsonSerializer.DeserializeAsync<Interval>(fs);
+                interval?.CompressInterval(0.5);
+                interval?.CompareIntervals(interval1);
+            }
             Console.WriteLine(new string('=', 40));
             Console.ReadKey();
         }
@@ -40,6 +48,8 @@
         {
             get => _name;
         }
+        
+
         public Interval(double leftBorder, double rightBorder, string name)
         {
             _leftBorder = leftBorder;
